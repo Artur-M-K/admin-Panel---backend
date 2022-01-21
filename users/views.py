@@ -144,16 +144,17 @@ class UserGenericAPIView(generics.GenericAPIView, mixins.ListModelMixin, mixins.
         def post(self, request):
             request.data.update({
                 'password': 1234,
-                'role': request.data['role_id']
+                'role': request.data.get('role_id')
             })
             return Response({
                 'data': self.create(request).data
             })
 
-        def put(self, request, pk=None):
-            if request.data['role_id']:
+        def patch(self, request, pk=None):
+            
+            if request.data.get('role_id'):
                 request.data.update({
-                'role': request.data['role_id']
+                'role': request.data.get('role_id')
             })
 
             return Response({
