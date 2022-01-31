@@ -81,17 +81,19 @@ class PermissionAPIView(APIView):
             'data': serializer.data
         })
 
-class RoleViewSet(viewsets.ViewSet):
+class RoleViewSet(viewsets.ModelViewSet):
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated & ViewPermissions]
     permission_object = 'roles'
+    serializer_class = RoleSerializer
+    pagination_class = CustomPagination
 
     def list(self, request):
-        serializer = RoleSerializer(Role.objects.all(), many=True)
-
-        return Response({
-            'data': serializer.data
-        })
+        queryset = Role.objects.all()
+        pagination = CustomPagination()
+        qs = pagination.paginate_queryset(queryset, request)
+        serializer = RoleSerializer(qs, many=True)
+        return pagination.get_paginated_response(serializer.data)
 
     def create(self, request):
         serializer = RoleSerializer(data=request.data)
