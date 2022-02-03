@@ -92,6 +92,12 @@ class RoleViewSet(viewsets.ModelViewSet):
         queryset = Role.objects.all()
         pagination = CustomPagination()
         qs = pagination.paginate_queryset(queryset, request)
+        # retrun all roles if endpoint dosn't include page parameter
+        if 'page' not in request.query_params:
+            serializer = RoleSerializer(queryset, many=True)
+            return Response({
+            'data': serializer.data
+            })
         serializer = RoleSerializer(qs, many=True)
         return pagination.get_paginated_response(serializer.data)
 
